@@ -1,0 +1,24 @@
+# 시스템 파일
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# NestJS 백엔드 제외
+nestjs_backend_api_ys/node_modules/
+nestjs_backend_api_ys/dist/
+nestjs_backend_api_ys/.env*
+
+# Flutter 프론트엔드 네이티브 및 빌드 폴더 통째로 제외
+flutter_frontend_ys/.dart_tool/
+flutter_frontend_ys/.packages
+flutter_frontend_ys/.pub-cache/
+flutter_frontend_ys/.pub/
+flutter_frontend_ys/build/
+
+# 네이티브 플랫폼 폴더 내부 파일들 원천 차단
+flutter_frontend_ys/android/
+flutter_frontend_ys/ios/
+flutter_frontend_ys/linux/
+flutter_frontend_ys/macos/
+flutter_frontend_ys/web/
+flutter_frontend_ys/windows/
