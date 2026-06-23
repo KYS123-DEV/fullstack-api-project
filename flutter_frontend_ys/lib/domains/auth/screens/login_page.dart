@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend_ys/common/utils/menu_service.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -122,7 +123,9 @@ class _LoginPageState extends State<LoginPage> {
 
                   // 5. 메인 로그인 버튼
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      // 홈 화면으로 넘어가기 전에 메뉴 데이터를 채움.
+                      await MenuService().fetchMenusFromDB();
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
