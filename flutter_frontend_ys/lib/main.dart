@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter + NestJS',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       home:
           const LoginPage(), //const MyHomePage(title: 'Flutter Demo Home Page'),
