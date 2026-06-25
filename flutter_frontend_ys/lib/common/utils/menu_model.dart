@@ -21,20 +21,16 @@ class MenuModel {
   });
 
   // 백엔드(NestJS)에서 넘어온 Map(JSON) 데이터를 DTO 객체로 변환하는 팩토리 메서드
-  // 임시 mock 데이터 변환용 factory (하드코딩 단계용)
-  factory MenuModel.fromMock({
-    required String id,
-    required String title,
-    String? icon,
-    String? path,
+  factory MenuModel.fromJson(
+    Map<String, dynamic> json, {
     List<MenuModel>? children,
     Widget Function(BuildContext)? screenBuilder,
   }) {
     return MenuModel(
-      id: id,
-      title: title,
-      icon: icon,
-      path: path,
+      id: json['id'] as String,
+      title: json['title'] as String,
+      icon: json['icon'] as String?,
+      path: json['path'] as String?,
       children: children,
       screenBuilder: screenBuilder,
     );

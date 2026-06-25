@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_frontend_ys/common/utils/menu_model.dart';
+import 'package:flutter_frontend_ys/common/utils/app_router.dart';
 
 class MenuService {
   MenuService._internal();
@@ -20,80 +22,73 @@ class MenuService {
     currentMenu.value = menu;
   }
 
-  // DB(API 서버)에서 데이터를 조회해오는 가상 함수
+  // DB(API 서버)에서 데이터를 조회해오는 함수
   Future<void> fetchMenusFromDB() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      // Supabase 'sidebar_menus' 테이블에서 순서(sort_order)대로 데이터를 긁어옴
+      final List<dynamic> rawData = await Supabase.instance.client
+          .from('sidebar_menus')
+          .select()
+          .order('parent_id', ascending: true)
+          .order('sort_order', ascending: true);
 
-    // AppBar 상단 카테고리 데이터 세팅
-    categoryMenus.value = [
-      {'id': 'c1', 'title': '개인정보수정'},
-      {'id': 'c2', 'title': '임시메뉴'},
-      {'id': 'c3', 'title': '시스템 설정'},
-    ];
+      // 평면형 DB 행(Row)들을 계층형 DTO 구조로 정제하기 위한 리스트 생성
+      List<MenuModel> rootMenus = [];
 
-    // Sidebar 메뉴 데이터 세팅
-    sidebarMenus.value = [
-      MenuModel.fromMock(
-        id: 'home',
-        title: 'Home',
-        icon: 'home',
-        path: '/',
-        screenBuilder: (context) =>
-            const Center(child: Text('Main Home 화면 콘텐츠 영역')),
-      ),
-      MenuModel.fromMock(
-        id: 'm1',
-        title: '기준정보',
-        icon: 'folder',
-        children: [
-          MenuModel.fromMock(
-            id: 'm1-1',
-            title: 'OO등록',
-            path: '/menu1-1',
-            screenBuilder: (context) => const Center(child: Text('기준정보 화면 영역')),
-          ),
-        ],
-      ),
-      MenuModel.fromMock(
-        id: 'm2',
-        title: 'OO관리',
-        icon: 'folder',
-        children: [
-          MenuModel.fromMock(
-            id: 'm2-1',
-            title: 'OO확인',
-            path: '/menu2-1',
-            screenBuilder: (context) =>
-                const Center(child: Text('실제 화면 영역 2-1')),
-          ),
-          MenuModel.fromMock(
-            id: 'm2-2',
-            title: 'OO등록 1',
-            path: '/menu2-2',
-            screenBuilder: (context) =>
-                const Center(child: Text('실제 화면 영역 2-2')),
-          ),
-          MenuModel.fromMock(
-            id: 'm2-3',
-            title: 'OO현황 2',
-            path: '/menu2-3',
-            screenBuilder: (context) =>
-                const Center(child: Text('실제 화면 영역 2-3')),
-          ),
-        ],
-      ),
-      MenuModel.fromMock(
-        id: 'm3',
-        title: 'OOOO출력',
-        icon: 'dashboard',
-        path: '/menu3',
-        screenBuilder: (context) => const Center(child: Text('OOOO출력 화면 영역')),
-      ),
-    ];
+      // 최상위 대메뉴(parent_id가 null인.)만 먼저 필터링
+      final parentRows = rawData
+          .where((row) => row['parent_id'] == null)
+          .toList();
 
-    // 초기 실행 시 첫 번째 메뉴(Home)가 자동으로 활성화되도록 기본값 주입
-    if (sidebarMenus.value.isNotEmpty) {
-      currentMenu.value = sidebarMenus.value.first;
+      for (var pRow in parentRows) {
+        String pId = pRow['id'];
+
+        // 현재 대메뉴의 ID를 부모로 지정하고 있는 자식 행들을 가져옴
+        final childRows = rawData
+            .where((row) => row['parent_id'] == pId)
+            .toList();
+
+        // 자식 데이터가 존재한다면 이 녀석들을 MenuModel DTO 리스트로 변환
+        List<MenuModel>? childrenModels = childRows.isNotEmpty
+            ? childRows
+                  .map(
+                    (cRow) => MenuModel.fromJson(
+                      cRow,
+                      screenBuilder: (context) =>
+                          AppRouter.getScreen(cRow['path'] ?? '/'),
+                    ),
+                  )
+                  .toList()
+            : null;
+
+        // 최종 대메뉴를 조립하여 루트 리스트에 담음 (자식 배열과 화면 빌더 결합)
+        rootMenus.add(
+          MenuModel.fromJson(
+            pRow,
+            children: childrenModels,
+            screenBuilder: pRow['path'] != null
+                ? (context) => AppRouter.getScreen(pRow['path'])
+                : null,
+          ),
+        );
+      }
+
+      // 조립이 끝난 완벽한 계층형 DTO 데이터를 전역 확성기 상자에 할당.
+      sidebarMenus.value = rootMenus;
+
+      // AppBar 상단 카테고리 데이터 세팅
+      categoryMenus.value = [
+        {'id': 'c1', 'title': '개인정보수정'},
+        {'id': 'c2', 'title': '임시메뉴'},
+        {'id': 'c3', 'title': '시스템 설정'},
+      ];
+
+      // 초기 실행 시 첫 번째 메뉴(Home)가 자동으로 활성화되도록 기본값 주입
+      if (sidebarMenus.value.isNotEmpty) {
+        currentMenu.value = sidebarMenus.value.first;
+      }
+    } catch (e) {
+      ('Supabase 메뉴 트리 가공 중 에러 발생: $e');
     }
   }
 }
