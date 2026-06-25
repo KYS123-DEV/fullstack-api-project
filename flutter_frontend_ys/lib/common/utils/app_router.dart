@@ -13,12 +13,15 @@ class AppRouter {
   //사이드바 메뉴
   static final Map<String, Widget Function()> _menuRoutes = {
     'home': () => const Center(child: Text('Main Home 화면 콘텐츠 영역')),
-    'menu1-1': () => const Center(child: Text('화면 영역 (menu1-1)')),
-    'menu1-2': () => const Center(child: Text('화면 영역 (menu1-2)')),
-    'menu1-3': () => const Center(child: Text('화면 영역 (menu1-3)')),
-    'menu2-1': () => const Center(child: Text('화면 영역 (menu2-1)')),
-    'menu3': () => const Center(child: Text('OOOO출력 화면 영역')),
-    'menu5-1': () => const Center(child: Text('화면 영역 (menu5-1)')),
+    'base_menu_reg': () => const Center(child: Text('[기준정보 > 메뉴등록] 화면')),
+    'customer_reg': () => const Center(child: Text('[고객사정보 > 고객사등록] 화면')),
+    'purchase_delivery_check': () =>
+        const Center(child: Text('[구매관리 > 납품등록확인] 화면')),
+    'purchase_delivery_status': () =>
+        const Center(child: Text('[구매관리 > 납품등록현황] 화면')),
+    'purchase_unpaid_status': () =>
+        const Center(child: Text('[구매관리 > 미납품현황] 화면')),
+    'statement_print': () => const Center(child: Text('거래명세표출력 화면')),
   };
 
   //Routes 통합
@@ -34,8 +37,13 @@ class AppRouter {
       return _allRoutes['home']!();
     }
 
-    // 입력된 path가 '/menu1-1' 이라면 앞의 슬래시('/')를 떼어내고 'menu1-1' 키값만 추출.
-    final String menuKey = path.replaceFirst('/', '');
+    // 맨 앞 슬래시 제거
+    // 중간 슬래시를 언더바로 치환
+    // 하이픈을 언더바로 치환
+    final String menuKey = path
+        .replaceFirst('/', '')
+        .replaceAll('/', '_')
+        .replaceAll('-', '_');
 
     // 등록된 명부에 키가 존재하면 해당 화면 위젯을 즉시 생성해서 반환
     if (_allRoutes.containsKey(menuKey)) {
