@@ -22,6 +22,12 @@ class MenuService {
     currentMenu.value = menu;
   }
 
+  // 홈 버튼 클릭 시 호출할 상태 초기화 메서드
+  void resetToHome() {
+    currentMenu.value = null;
+    // currentMenu를 null로 만들면, CommonLayout 우측 영역이 알아서 기본 body 위젯을 띄움.
+  }
+
   // DB(API 서버)에서 데이터를 조회해오는 함수
   Future<void> fetchMenusFromDB() async {
     try {
@@ -84,9 +90,9 @@ class MenuService {
       ];
 
       // 초기 실행 시 첫 번째 메뉴(Home)가 자동으로 활성화되도록 기본값 주입
-      if (sidebarMenus.value.isNotEmpty) {
-        currentMenu.value = sidebarMenus.value.first;
-      }
+      // if (sidebarMenus.value.isNotEmpty) {
+      //   currentMenu.value = sidebarMenus.value.first;
+      // }
     } catch (e) {
       ('Supabase 메뉴 트리 가공 중 에러 발생: $e');
     }

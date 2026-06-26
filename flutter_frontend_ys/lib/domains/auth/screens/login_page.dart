@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend_ys/common/utils/menu_service.dart';
+import 'package:flutter_frontend_ys/common/widgets/common_layout.dart';
 import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -36,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: themeColor.withOpacity(0.1),
+                        color: themeColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Icon(
@@ -126,11 +127,16 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () async {
                       // 홈 화면으로 넘어가기 전에 메뉴 데이터를 채움.
                       await MenuService().fetchMenusFromDB();
+                      //비동기 갭 방어
+                      if (!context.mounted) return;
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           //진짜 홈 화면
-                          builder: (context) => const HomPage(),
+                          builder: (context) => const CommonLayout(
+                            title: "Main Home Screen",
+                            body: HomPage(),
+                          ),
                         ),
                       );
                     },

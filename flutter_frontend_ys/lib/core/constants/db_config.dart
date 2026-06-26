@@ -13,7 +13,7 @@ class DbConfig {
       final String anonKey = dotenv.get('SUPABASE_ANON_KEY', fallback: '');
 
       if (url.isEmpty || anonKey.isEmpty) {
-        throw Exception("[Error] .env 파일에 Supabase 설정 값 없음");
+        throw Exception("[Error] 올바른 DB 설정 값 없음");
       }
 
       // 초기화 수행

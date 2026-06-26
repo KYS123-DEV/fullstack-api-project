@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend_ys/domains/auth/screens/login_page.dart';
+import 'package:flutter_frontend_ys/domains/auth/screens/home_page.dart';
 
 // 요청 등록지
 class AppRouter {
   // 공통 + 인증 관련 시스템 화면
   static final Map<String, Widget Function()> _systemRoutes = {
-    'home_page': () => const Center(child: Text('Main Home 콘텐츠 영역')),
+    'home_page': () => const HomPage(),
     'login_page': () => const LoginPage(),
     'not-found': () => const Center(child: Text('404: 페이지를 찾을 수 없습니다.')),
   };
 
   //사이드바 메뉴
   static final Map<String, Widget Function()> _menuRoutes = {
-    'home': () => const Center(child: Text('Main Home 화면 콘텐츠 영역')),
+    'home': () => const HomPage(),
     'base_menu_reg': () => const Center(child: Text('[기준정보 > 메뉴등록] 화면')),
     'customer_reg': () => const Center(child: Text('[고객사정보 > 고객사등록] 화면')),
     'purchase_delivery_check': () =>
