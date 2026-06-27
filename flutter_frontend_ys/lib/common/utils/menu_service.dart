@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_frontend_ys/common/utils/menu_model.dart';
 import 'package:flutter_frontend_ys/common/utils/app_router.dart';
+import 'package:flutter_frontend_ys/domains/system/services/menu_api_service.dart';
 
 class MenuService {
   MenuService._internal();
@@ -9,13 +9,14 @@ class MenuService {
   factory MenuService() => _instance;
 
   // 전역 메뉴 데이터 변수들
-  final ValueNotifier<List<Map<String, String>>> categoryMenus = ValueNotifier(
-    [],
-  );
+  final ValueNotifier<List<Map<String, String>>> categoryMenus = ValueNotifier([]);
   final ValueNotifier<List<MenuModel>> sidebarMenus = ValueNotifier([]);
 
   // 현재 선택된 'MenuModel 데이터 객체 자체'를 전역 상태로 관리
   final ValueNotifier<MenuModel?> currentMenu = ValueNotifier(null);
+
+  // 가공되지 않은 순수 통신을 맡을 비서관 서비스
+  final MenuApiService _menuApiService = MenuApiService();
 
   // 화면 변경 메소드
   void changeMenu(MenuModel menu) {
@@ -32,11 +33,7 @@ class MenuService {
   Future<void> fetchMenusFromDB() async {
     try {
       // Supabase 'sidebar_menus' 테이블에서 순서(sort_order)대로 데이터를 긁어옴
-      final List<dynamic> rawData = await Supabase.instance.client
-          .from('sidebar_menus')
-          .select()
-          .order('parent_id', ascending: true)
-          .order('sort_order', ascending: true);
+      final List<dynamic> rawData = await _menuApiService.fetchMenus();
 
       // 평면형 DB 행(Row)들을 계층형 DTO 구조로 정제하기 위한 리스트 생성
       List<MenuModel> rootMenus = [];

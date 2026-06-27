@@ -4,6 +4,8 @@ Thumbs.db
 desktop.ini
 .env
 .flutter-plugins-dependencies
+.metadata
+flutter_frontend_ys/.gitignore
 
 # NestJS 백엔드 제외
 nestjs_backend_api_ys/node_modules/

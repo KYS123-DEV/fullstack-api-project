@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend_ys/core/constants/db_config.dart';
 import 'package:flutter_frontend_ys/common/utils/app_router.dart';
+import 'package:flutter_frontend_ys/core/constants/db_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
